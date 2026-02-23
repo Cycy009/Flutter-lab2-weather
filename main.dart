@@ -1,46 +1,63 @@
-String formatShortDate(DateTime date) {
-  const months = <String>[
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
-  return '${months[date.month - 1]} ${date.day}';
+import 'dart:async';
+
+Future<String> fetchCurrentWeather() async {
+  print('Fetching current weather...');
+  await Future.delayed(Duration(seconds: 2));
+  return 'Sunny';
 }
 
-void main() {
-  final forecastConditions = <String>[
+Future<int> fetchTemperature() async {
+  await Future.delayed(Duration(seconds: 1));
+  return 28;
+}
+
+Future<int> fetchHumidity() async {
+  await Future.delayed(Duration(seconds: 1));
+  return 65;
+}
+
+Stream<String> forecastStream() async* {
+  var forecasts = [
     'Partly Cloudy',
     'Rainy',
     'Sunny',
     'Cloudy',
     'Sunny',
   ];
-  final today = DateTime.now();
 
-  print('=== Weather App ===');
-  print('');
-  print('Fetching current weather...');
-  print('');
-  print('=== Weather Report ===');
-  print('Current Weather: Sunny');
-  print('Temperature: 28\u00B0C');
-  print('Humidity: 65%');
-  print('==================== 5-Day Forecast ===');
-
-  for (var i = 0; i < forecastConditions.length; i++) {
-    final date = today.add(Duration(days: i));
-    final formattedDate = formatShortDate(date);
-    print('Day ${i + 1} ($formattedDate): ${forecastConditions[i]}');
+  for (var forecast in forecasts) {
+    await Future.delayed(Duration(seconds: 1));
+    yield forecast;
   }
+}
 
-  print('Forecast complete!Weather app completed!');
+Future<void> main() async {
+  try {
+    String weather = await fetchCurrentWeather();
+    print('Current Weather: $weather');
+
+    // Parallel execution
+    var results = await Future.wait([
+      fetchTemperature(),
+      fetchHumidity(),
+    ]);
+
+    int temp = results[0];
+    int humidity = results[1];
+
+    print('Temperature: ${temp}°C');
+    print('Humidity: $humidity%');
+
+    print('\n=== 5-Day Forecast ===');
+
+    int day = 1;
+    await for (String forecast in forecastStream()) {
+      print('Day $day: $forecast');
+      day++;
+    }
+
+    print('Forecast complete!');
+  } catch (e) {
+    print('Error fetching weather: $e');
+  }
 }
