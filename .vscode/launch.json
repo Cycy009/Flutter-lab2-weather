@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Dart: Run Current File",
+      "type": "dart",
+      "request": "launch",
+      "program": "${file}"
+    },
+    {
+      "name": "Dart: Run lab2.dart",
+      "type": "dart",
+      "request": "launch",
+      "program": "${workspaceFolder}/lab2.dart"
+    }
+  ]
+}
